@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Primeveil Userscript Patcher</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{color-scheme:dark;--bg:#000;--card:#0a0a0a;--line:#262626;--line2:#454545;--fg:#ededed;--mute:#a1a1a1;--dim:#6b6b6b;--ok:#3ecf8e;--warn:#f5a524;--err:#ff5c5c;--info:#52a8ff;--sans:"Geist",Inter,system-ui,-apple-system,"Segoe UI",sans-serif;--mono:"Geist Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;min-height:100%;background:var(--bg);color:var(--fg);font:14px/1.6 var(--sans);-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:rgba(0,0,0,.85);backdrop-filter:blur(12px)}
+.wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:9;background:rgba(0,0,0,.8);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.bar-in{display:flex;align-items:center;gap:10px;height:56px}
+.logo{display:grid;place-items:center;color:var(--fg)}
+.brand{font-weight:600;letter-spacing:-.01em}
+.sep{color:var(--line2);font-size:20px;font-weight:300}
+.sub{color:var(--mute)}
+.hero{padding:64px 0 36px}
+h1{margin:0 0 14px;font-size:clamp(34px,6vw,56px);line-height:1.05;letter-spacing:-.045em;font-weight:700;background:linear-gradient(180deg,#fff 30%,#8a8a8a);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p{margin:0;max-width:62ch;color:var(--mute);font-size:16px}
+.grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;align-items:start}
+@media(max-width:860px){.grid{grid-template-columns:minmax(0,1fr)}.hero{padding-top:40px}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:20px}
+h2{margin:0 0 14px;font-size:16px;font-weight:600;letter-spacing:-.01em}
+h3{margin:22px 0 6px;font-size:13px;font-weight:600;color:var(--fg)}
+.hint{margin:0 0 12px;color:var(--mute);font-size:13px}
+.drop{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:132px;padding:20px;border:1px dashed var(--line2);border-radius:8px;text-align:center;cursor:pointer;transition:border-color .15s,background .15s}
+.drop:hover,.drop.over{border-color:var(--fg);background:#111}
+.drop:focus-within{outline:2px solid var(--info);outline-offset:2px}
+.drop input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.drop strong{font-weight:500}.drop span{color:var(--mute);font-size:13px}
+.paste{margin-top:12px}
+summary{cursor:pointer;color:var(--mute);font-size:13px;width:fit-content}
+summary:hover{color:var(--fg)}
+summary:focus-visible,button:focus-visible,.chip input:focus-visible+span,.chk input:focus-visible{outline:2px solid var(--info);outline-offset:2px}
+textarea{display:block;width:100%;height:140px;margin-top:10px;padding:10px 12px;resize:vertical;background:#000;color:var(--fg);border:1px solid var(--line);border-radius:6px;font:12px/1.5 var(--mono)}
+textarea:focus{outline:none;border-color:var(--line2)}
+.finfo{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:12px;padding:8px 12px;border:1px solid var(--line);border-radius:6px;font-family:var(--mono);font-size:12px}
+.finfo span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{position:relative}
+.chip input{position:absolute;opacity:0;inset:0;cursor:pointer;margin:0}
+.chip span{display:block;padding:3px 9px;border:1px solid var(--line);border-radius:999px;color:var(--dim);font:12px/1.5 var(--mono);transition:border-color .12s,color .12s,background .12s}
+.chip input:checked+span{border-color:var(--fg);background:#171717;color:var(--fg)}
+.chip input:disabled{cursor:default}
+.chip input:disabled+span{opacity:.75}
+.tools{display:flex;gap:14px;margin-top:10px}
+.lnk{padding:0;background:none;border:0;color:var(--mute);font:inherit;font-size:13px;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+.lnk:hover{color:var(--fg)}
+.chk{display:flex;align-items:flex-start;gap:8px;margin-top:8px;color:var(--mute);cursor:pointer}
+.chk input{margin:4px 0 0;accent-color:#fff}
+.checks{list-style:none;margin:0 0 16px;padding:0;display:grid;gap:8px}
+.checks li{display:flex;gap:10px;align-items:flex-start;color:var(--mute);font-size:13px}
+.checks i{flex:none;width:8px;height:8px;margin-top:7px;border-radius:50%;background:var(--dim)}
+.checks .ok i{background:var(--ok)}.checks .warn i{background:var(--warn)}.checks .err i{background:var(--err)}.checks .info i{background:var(--info)}
+.checks code{font-family:var(--mono);font-size:12px;color:var(--fg)}
+.actions{display:flex;flex-wrap:wrap;gap:8px}
+.btn{height:36px;padding:0 16px;border-radius:6px;font:500 14px var(--sans);cursor:pointer;border:1px solid var(--line2);background:transparent;color:var(--fg);transition:background .15s,border-color .15s}
+.btn:hover:not(:disabled){background:#171717;border-color:#666}
+.btn.pri{background:#fff;color:#000;border-color:#fff}
+.btn.pri:hover:not(:disabled){background:#d4d4d4;border-color:#d4d4d4}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.msg{min-height:22px;margin-top:10px;color:var(--mute);font-size:13px}
+.pv{margin:8px 0 0;padding:12px;max-height:300px;overflow:auto;background:#000;border:1px solid var(--line);border-radius:6px;color:var(--mute);font:12px/1.55 var(--mono);white-space:pre-wrap;word-break:break-all}
+.foot{margin-top:64px;padding:24px 20px;border-top:1px solid var(--line);color:var(--dim);font-size:13px;text-align:center}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<header class="bar"><div class="wrap bar-in">
+<span class="logo"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M3 5l9 15 9-15"/><path d="M7.5 5L12 12.5 16.5 5" opacity=".45"/></svg></span>
+<span class="brand">Primeveil</span><span class="sep">/</span><span class="sub">Userscript Patcher</span>
+</div></header>
+
+<main class="wrap">
+<section class="hero">
+<h1>Userscript Patcher</h1>
+<p>Thả userscript được obfuscate bằng Primeveil vào đây để chạy được trên Tampermonkey. Mọi xử lý đều trong trình duyệt, file không được gửi đi đâu.</p>
+</section>
+
+<div class="grid">
+<section class="card">
+<h2>Script đầu vào</h2>
+<label class="drop" id="drop"><input type="file" id="file" accept=".js,.txt,text/javascript,text/plain"><strong>Thả file vào đây</strong><span>hoặc bấm để chọn file .js / .user.js</span></label>
+<details class="paste"><summary>Dán code trực tiếp</summary><textarea id="paste" spellcheck="false" placeholder="Dán nội dung userscript, có hoặc không có khối ==UserScript=="></textarea></details>
+<div class="finfo" id="finfo" hidden><span id="fname"></span><button type="button" class="lnk" id="clear">Xóa</button></div>
+
+<h3>Hàm cần bắc cầu</h3>
+<p class="hint">Chỉ những hàm script thật sự dùng mới cần bật. Ba mục đầu luôn bật vì VM của obfuscator tra cứu chúng khi khởi động.</p>
+<div class="chips" id="chips"></div>
+<div class="tools"><button type="button" class="lnk" id="selAll">Chọn tất cả</button><button type="button" class="lnk" id="selNone">Xóa tất cả</button><button type="button" class="lnk" id="selGrant">Theo @grant trong header</button></div>
+
+<h3>Header</h3>
+<label class="chk"><input type="checkbox" id="optGrant"><span>Thêm @grant còn thiếu cho các hàm đã chọn</span></label>
+<label class="chk"><input type="checkbox" id="optConn" checked><span>Thêm <code>@connect *</code> khi script dùng GM_xmlhttpRequest mà chưa có @connect</span></label>
+</section>
+
+<section class="card">
+<h2>Kết quả</h2>
+<ul class="checks" id="checks"></ul>
+<div class="actions">
+<button type="button" class="btn pri" id="copy" disabled>Sao chép script đã vá</button>
+<button type="button" class="btn" id="dl" disabled>Tải xuống (.txt)</button>
+</div>
+<div class="msg" id="msg" aria-live="polite"></div>
+<pre class="pv" id="pv"></pre>
+</section>
+</div>
+
+</main>
+<footer class="foot">© 2026 • Product by VerrniTeam • All rights reserved</footer>
+
+<script>
+(function(){
+var API=["GM","GM_info","unsafeWindow","GM_getValue","GM_setValue","GM_deleteValue","GM_listValues","GM_getValues","GM_setValues","GM_deleteValues","GM_addValueChangeListener","GM_removeValueChangeListener","GM_xmlhttpRequest","GM_download","GM_openInTab","GM_registerMenuCommand","GM_unregisterMenuCommand","GM_notification","GM_setClipboard","GM_addStyle","GM_addElement","GM_getResourceText","GM_getResourceURL","GM_log","GM_getTab","GM_saveTab","GM_getTabs","GM_cookie","GM_webRequest","cloneInto","exportFunction","createObjectIn"];
+var LOCKED=new Set(["GM","GM_info","unsafeWindow"]);
+var NOGRANT=new Set(["GM","cloneInto","exportFunction","createObjectIn"]);
+var MARKS=["Userscript Patcher - for Primeveil","primeveil:gm-bridge","g[n]===v||Object.defineProperty","getOwnPropertyDescriptor(g,n);if(d&&d.value===v)"];
+var MIT=`MIT License
+
+Copyright (c) 2026 Zeraa
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.`;
+function banner(){
+  var L=["Userscript Patcher - for Primeveil","Original file: "+S.name.replace(/\*\//g,"* /"),"License: MIT",""].concat(MIT.split("\n"),["","This tool is used to patch userscripts obfuscated by https://primeveil.com/ that can't run on Tampermonkey."]);
+  return "/**\n"+L.map(function(l){return(" * "+l).replace(/\s+$/,"")}).join("\n")+"\n */\n";
+}
+var HDR=/\/\/\s*==UserScript==[\s\S]*?\/\/\s*==\/UserScript==/;
+var S={name:"",text:"",sel:new Set(API)};
+var DL=null,OUT="";
+var $=function(i){return document.getElementById(i)};
+var esc=function(s){return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})};
+var kb=function(n){return n<1024?n+" B":(n/1024).toFixed(1)+" KB"};
+
+function analyze(t){
+  var m=HDR.exec(t),h=m?m[0]:"";
+  var list=function(re){var r=[],x;while((x=re.exec(h)))r.push(x[1]);return r};
+  return {m:m,header:h,grants:list(/\/\/\s*@grant\s+(\S+)/g),connects:list(/\/\/\s*@connect\s+(\S+)/g),patched:MARKS.some(function(m){return t.indexOf(m)>-1})};
+}
+function prelude(names){
+  var p=";(function(g){var e=function(n,v){try{g[n]===v||Object.defineProperty(g,n,{value:v,writable:!0,configurable:!0})}catch(_){}};";
+  names.forEach(function(n){p+="typeof "+n+">\"u\"||e(\""+n+"\","+n+");"});
+  return p+"})(typeof globalThis<\"u\"?globalThis:self);";
+}
+function build(a){
+  if(!S.text||a.patched)return S.text;
+  var names=API.filter(function(n){return S.sel.has(n)});
+  var pre=prelude(names);
+  function join(body){var d=/^\s*(["'])use strict\1;?/.exec(body);return banner()+(d?d[0].trim()+"\n":"")+pre+(d?body.slice(d[0].length):body)}
+  if(!a.m)return join(S.text);
+  var hdr=a.header,add="";
+  var none=a.grants.indexOf("none")>-1;
+  if($("optGrant").checked&&!none)names.forEach(function(n){if(!NOGRANT.has(n)&&a.grants.indexOf(n)<0)add+="// @grant        "+n+"\n"});
+  var xhr=a.grants.some(function(g){return /xmlhttp/i.test(g)})||($("optGrant").checked&&S.sel.has("GM_xmlhttpRequest"));
+  if($("optConn").checked&&xhr&&!a.connects.length)add+="// @connect      *\n";
+  if(add)hdr=hdr.replace(/\/\/\s*==\/UserScript==/,function(){return add+"// ==/UserScript=="});
+  var before=S.text.slice(0,a.m.index),after=S.text.slice(a.m.index+a.header.length).replace(/^\r?\n/,"");
+  return before+hdr+"\n"+join(after);
+}
+function outName(){
+  var m=S.name.match(/^(.*?)(\.user)?\.js$/i);
+  return m?m[1]+".patched"+(m[2]||"")+".js":(S.name||"userscript")+".patched.js";
+}
+function syncChips(){
+  document.querySelectorAll("#chips input").forEach(function(i){i.checked=S.sel.has(i.value)});
+}
+function fromGrants(a){
+  var s=new Set(LOCKED);
+  if(a.grants.length&&a.grants.indexOf("none")<0){a.grants.forEach(function(g){if(API.indexOf(g)>-1)s.add(g)});return s}
+  return new Set(API);
+}
+function checks(a){
+  var r=[],has=!!S.text;
+  if(!has)return [["info","Chưa có script. Thả file hoặc dán code ở khung bên trái."]];
+  r.push(["info","<code>"+esc(S.name)+"</code> · "+kb(S.text.length)+(OUT.length&&!a.patched?" → "+kb(OUT.length):"")]);
+  if(a.patched)r.push(["warn","Script này đã có cầu nối Primeveil, sẽ không vá lần hai."]);
+  if(a.m)r.push(["ok","Tìm thấy khối <code>==UserScript==</code>."]);
+  else r.push(["warn","Không có khối header. Vẫn vá được, nhưng bạn cần tự thêm header có đủ @grant."]);
+  if(a.m){
+    if(a.grants.indexOf("none")>-1)r.push(["err","<code>@grant none</code>: Tampermonkey sẽ không cấp GM_*. Hãy bỏ dòng này."]);
+    else if(!a.grants.length)r.push(["warn","Header chưa có @grant nào. Hãy khai báo các hàm GM_* mà script dùng."]);
+    else r.push(["ok","Đã khai báo "+a.grants.length+" @grant: <code>"+esc(a.grants.join(", "))+"</code>"]);
+    if(a.grants.some(function(g){return /xmlhttp/i.test(g)})){
+      if(a.connects.length)r.push(["ok","Đã có @connect: <code>"+esc(a.connects.join(", "))+"</code>"]);
+      else r.push(["warn","Dùng GM_xmlhttpRequest nhưng chưa có @connect, Tampermonkey có thể chặn request."]);
+    }
+  }
+  if(S.text.length>20000&&S.text.split("\n").length<40)r.push(["info","Có vẻ là code đã minify hoặc obfuscate."]);
+  return r;
+}
+function render(){
+  var a=analyze(S.text),has=!!S.text;
+  OUT=has?build(a):"";
+  $("checks").innerHTML=checks(a).map(function(c){return '<li class="'+c[0]+'"><i></i><span>'+c[1]+"</span></li>"}).join("");
+  $("pv").textContent=has?OUT.slice(0,1800)+(OUT.length>1800?"\n… +"+(OUT.length-1800).toLocaleString("vi-VN")+" ký tự":""):"Bản xem trước sẽ hiện ở đây.";
+  var can=has&&!a.patched;
+  $("copy").disabled=!can;$("dl").disabled=!can;
+  $("finfo").hidden=!has;$("fname").textContent=S.name;
+}
+function load(name,text){
+  S.name=name;S.text=text;$("msg").textContent="";
+  S.sel=fromGrants(analyze(text));syncChips();render();
+}
+function setMsg(t){$("msg").textContent=t}
+async function copyText(t){
+  try{await navigator.clipboard.writeText(t);return true}catch(e){
+    var ta=document.createElement("textarea");ta.value=t;ta.style.cssText="position:fixed;top:0;opacity:0";
+    document.body.appendChild(ta);ta.select();var ok=false;
+    try{ok=document.execCommand("copy")}catch(_){}
+    ta.remove();return ok;
+  }
+}
+
+var chips=$("chips");
+API.forEach(function(n){
+  var l=document.createElement("label");l.className="chip";
+  var i=document.createElement("input");i.type="checkbox";i.value=n;i.checked=true;
+  if(LOCKED.has(n)){i.disabled=true;l.title="Luôn bật"}
+  i.addEventListener("change",function(){if(i.checked)S.sel.add(n);else S.sel.delete(n);render()});
+  var s=document.createElement("span");s.textContent=n;
+  l.appendChild(i);l.appendChild(s);chips.appendChild(l);
+});
+
+$("file").addEventListener("change",async function(e){
+  var f=e.target.files[0];if(!f)return;
+  $("paste").value="";load(f.name,await f.text());e.target.value="";
+});
+var drop=$("drop");
+["dragenter","dragover"].forEach(function(t){drop.addEventListener(t,function(e){e.preventDefault();drop.classList.add("over")})});
+["dragleave","drop"].forEach(function(t){drop.addEventListener(t,function(e){e.preventDefault();drop.classList.remove("over")})});
+drop.addEventListener("drop",async function(e){
+  var f=e.dataTransfer&&e.dataTransfer.files[0];if(!f)return;
+  $("paste").value="";load(f.name,await f.text());
+});
+$("paste").addEventListener("input",function(e){
+  var v=e.target.value;
+  if(v)load("userscript.user.js",v);else load("","");
+});
+$("clear").addEventListener("click",function(){$("paste").value="";load("","")});
+$("selAll").addEventListener("click",function(){S.sel=new Set(API);syncChips();render()});
+$("selNone").addEventListener("click",function(){S.sel=new Set(LOCKED);syncChips();render()});
+$("selGrant").addEventListener("click",function(){S.sel=fromGrants(analyze(S.text));syncChips();render()});
+$("optGrant").addEventListener("change",render);
+$("optConn").addEventListener("change",render);
+$("copy").addEventListener("click",async function(){
+  setMsg(await copyText(OUT)?"Đã sao chép. Dán vào script mới trong Tampermonkey.":"Không sao chép được. Hãy thử nút tải xuống.");
+});
+$("dl").addEventListener("click",async function(){
+  if(!DL){try{var a=document.createElement("a");a.href=URL.createObjectURL(new Blob([OUT],{type:"text/plain"}));a.download=outName()+".txt";document.body.appendChild(a);a.click();a.remove();setMsg("Đã thử tải xuống theo cách dự phòng. Nếu không thấy file, hãy dùng nút Sao chép.")}catch(e){setMsg("Chế độ xem này không hỗ trợ tải xuống. Hãy dùng nút Sao chép.")}return}
+  try{await DL.save({filename:outName()+".txt",data:OUT});setMsg("Đã lưu. Đổi tên bỏ đuôi .txt trước khi cài.")}
+  catch(err){setMsg(err&&err.code==="declined"?"Đã huỷ lưu file.":"Không lưu được: "+((err&&err.message)||"lỗi không rõ"))}
+});
+
+try{if(window.claude&&window.claude.use)window.claude.use("downloads").then(function(d){DL=d;render()}).catch(function(){})}catch(_){}
+render();
+})();
+</script>
+</body>
+</html>
